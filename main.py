@@ -17,10 +17,11 @@ pygame.init()
 sc = pygame.display.set_mode([RES, RES])
 clock = pygame.time.Clock()
 font_score = pygame.font.SysFont('Arial', 26, bold=True)
+font_end = pygame.font.SysFont('Arial', 66, bold=True)
 
 while True:
     sc.fill(pygame.Color('black'))
-    [(pygame.draw.rect(sc, pygame.Color('green'), (i, j, SIZE, SIZE))) for i, j in snake]
+    [(pygame.draw.rect(sc, pygame.Color('green'), (i, j, SIZE - 2, SIZE - 2))) for i, j in snake]
     pygame.draw.rect(sc, pygame.Color('red'), (*apple, SIZE, SIZE))
     # snake score
     render_score = font_score.render(f'SCORE: {score}', 1, pygame.Color('orange'))
@@ -30,15 +31,21 @@ while True:
     y += dy * SIZE
     snake.append((x, y))
     snake = snake[-length:]
-
+    # eating apple
     if snake[-1] == apple:
         apple = randrange(0, RES, SIZE), randrange(0, RES, SIZE)
         length += 1
         fps += 1
         score += 1
-
+    # game over
     if x < 0 or x > RES - SIZE or y < 0 or y > RES - SIZE or len(snake) != len(set(snake)):
-        break
+        while True:
+            render_end = font_end.render('GAME OVER', 1, pygame.Color('orange'))
+            sc.blit(render_end, (RES // 2 - 150, RES // 3))
+            pygame.display.flip()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
 
 
     pygame.display.flip()
